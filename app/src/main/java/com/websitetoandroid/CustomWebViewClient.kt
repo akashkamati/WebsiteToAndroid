@@ -2,17 +2,14 @@ package com.websitetoandroid
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
-import android.net.http.SslError
-import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
-import android.webkit.WebViewClient
+import com.google.accompanist.web.AccompanistWebViewClient
 
-class CustomWebViewClient(private val activity: Activity) : WebViewClient(){
+class CustomWebViewClient(private val activity: Activity) : AccompanistWebViewClient(){
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
 
@@ -28,20 +25,6 @@ class CustomWebViewClient(private val activity: Activity) : WebViewClient(){
         return true
     }
 
-
-    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-        super.onPageStarted(view, url, favicon)
-    }
-
-    override fun onPageFinished(view: WebView?, url: String?) {
-        super.onPageFinished(view, url)
-    }
-
-    override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
-        //handler?.proceed()
-        // return
-    }
-
     override fun onReceivedHttpError(
         view: WebView?,
         request: WebResourceRequest?,
@@ -53,7 +36,7 @@ class CustomWebViewClient(private val activity: Activity) : WebViewClient(){
     }
 
     override fun onReceivedError(
-        view: WebView?,
+        view: WebView,
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {

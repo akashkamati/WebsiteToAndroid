@@ -26,7 +26,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -70,5 +71,6 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation "com.google.accompanist:accompanist-webview:0.31.5-beta"
 
 }

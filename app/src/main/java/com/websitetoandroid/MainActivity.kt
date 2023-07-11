@@ -2,10 +2,7 @@ package com.websitetoandroid
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.ViewGroup
 import android.webkit.ValueCallback
-import android.webkit.WebSettings
-import android.webkit.WebView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -14,12 +11,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.google.accompanist.web.rememberWebViewNavigator
+import com.google.accompanist.web.rememberWebViewState
 import com.websitetoandroid.ui.theme.WebsiteToAndroidTheme
 
 class MainActivity : ComponentActivity() {
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -29,36 +27,29 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                     val fileChooserLauncher = rememberLauncherForActivityResult(contract = FileChooserContract(), onResult = {
-                         if (it != null) {
-                             filePathCallback?.onReceiveValue(it.toTypedArray())
-                         }
-                     })
+                    val fileChooserLauncher = rememberLauncherForActivityResult(
+                        contract = FileChooserContract(),
+                        onResult = {
+                            if (it != null) {
+                                filePathCallback?.onReceiveValue(it.toTypedArray())
+                            }
+                        })
 
-                    val customWebChromeClient = CustomWebChromeClient {callback,params ->
-                        filePathCallback = callback
-                        fileChooserLauncher.launch(params)
-                    }
-                    val webView = WebView(this).apply {
-                        settings.cacheMode = WebSettings.LOAD_DEFAULT
-                        settings.userAgentString = "Mozilla/5.0 (Linux; Android 9; ONEPLUS A3003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.92 Mobile Safari/537.36"
-                        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                        settings.javaScriptEnabled = true
-                        settings.domStorageEnabled = true
-                        settings.allowContentAccess = true
-                        settings.allowFileAccess = true
-                        settings.loadsImagesAutomatically = true
-                        settings.mediaPlaybackRequiresUserGesture = false
-                        webViewClient = CustomWebViewClient(this@MainActivity)
-                        webChromeClient = customWebChromeClient
-                        layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
+                    val customWebChromeClient =
+                        CustomWebChromeClient{ callback, params ->
+                            filePathCallback = callback
+                            fileChooserLauncher.launch(params)
+                        }
 
-                    }
-                    WebView.setWebContentsDebuggingEnabled(true)
-                    MainScreen(this,webView)
+
+                    val state = rememberWebViewState(url = AppConstants.ENTRY_URL)
+                    val navigator = rememberWebViewNavigator()
+                    MainScreen(
+                        activity = this,
+                        state = state,
+                        customWebChromeClient = customWebChromeClient,
+                        navigator = navigator
+                    )
                 }
             }
         }

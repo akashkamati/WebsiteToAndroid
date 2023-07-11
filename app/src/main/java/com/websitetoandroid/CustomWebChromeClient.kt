@@ -3,11 +3,11 @@ package com.websitetoandroid
 import android.net.Uri
 import android.webkit.ConsoleMessage
 import android.webkit.ValueCallback
-import android.webkit.WebChromeClient
 import android.webkit.WebView
+import com.google.accompanist.web.AccompanistWebChromeClient
 
 
-class CustomWebChromeClient(private val onFileChooserCallback: (ValueCallback<Array<Uri>>?,FileChooserParams?) -> Unit) : WebChromeClient() {
+class CustomWebChromeClient(private val onFileChooserCallback: (ValueCallback<Array<Uri>>?,FileChooserParams?) -> Unit) : AccompanistWebChromeClient() {
 
 
 
