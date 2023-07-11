@@ -1,10 +1,13 @@
 package com.websitetoandroid
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.ViewGroup
+import android.webkit.ValueCallback
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +17,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.websitetoandroid.ui.theme.WebsiteToAndroidTheme
 
 class MainActivity : ComponentActivity() {
+
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -23,6 +29,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                     val fileChooserLauncher = rememberLauncherForActivityResult(contract = FileChooserContract(), onResult = {
+                         if (it != null) {
+                             filePathCallback?.onReceiveValue(it.toTypedArray())
+                         }
+                     })
+
+                    val customWebChromeClient = CustomWebChromeClient {callback,params ->
+                        filePathCallback = callback
+                        fileChooserLauncher.launch(params)
+                    }
                     val webView = WebView(this).apply {
                         settings.cacheMode = WebSettings.LOAD_DEFAULT
                         settings.userAgentString = "Mozilla/5.0 (Linux; Android 9; ONEPLUS A3003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.92 Mobile Safari/537.36"
@@ -31,6 +47,10 @@ class MainActivity : ComponentActivity() {
                         settings.domStorageEnabled = true
                         settings.allowContentAccess = true
                         settings.allowFileAccess = true
+                        settings.loadsImagesAutomatically = true
+                        settings.mediaPlaybackRequiresUserGesture = false
+                        webViewClient = CustomWebViewClient(this@MainActivity)
+                        webChromeClient = customWebChromeClient
                         layoutParams = ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT

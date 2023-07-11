@@ -83,8 +83,6 @@ fun MainScreen(activity: Activity, webView: WebView) {
             factory = {
                 webView.apply {
                     loadUrl(AppConstants.ENTRY_URL)
-                    webViewClient = CustomWebViewClient(activity)
-                    webChromeClient = CustomWebChromeClient()
                 }
 
             },
