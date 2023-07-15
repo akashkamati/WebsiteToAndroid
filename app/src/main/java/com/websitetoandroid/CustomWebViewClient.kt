@@ -14,7 +14,7 @@ class CustomWebViewClient(private val activity: Activity) : AccompanistWebViewCl
 
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         val url = request?.url.toString()
-        if (url.startsWith("https")){
+        if (!url.startsWith("https") || !url.startsWith("http")){
             Intent(Intent.ACTION_VIEW).apply {
                 Uri.parse(request?.url.toString())
                 activity.startActivity(this)
