@@ -1,0 +1,7 @@
+{
+  "EntryUrl" : "https://w3schools.com",
+  "EnablePullRefresh" : false,
+  "StatusBarColor" : "#D21A4F",
+  "ShowSplashTime" : 5,
+  "PageLoaderType" : "NONE"
+}
