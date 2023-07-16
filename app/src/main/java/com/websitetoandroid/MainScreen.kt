@@ -72,39 +72,40 @@ fun MainScreen(
     }
 
 
-        Box(
-            modifier
-                .fillMaxSize()
-                .pullRefresh(pullRefreshState, enablePullRefresh)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            WebView(
-                state = state,
-                captureBackPresses = true,
-                onCreated = {
-                    it.settings.apply {
-                        cacheMode = WebSettings.LOAD_DEFAULT
-                        userAgentString =
-                            "Mozilla/5.0 (Linux; Android 9; ONEPLUS A3003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.92 Mobile Safari/537.36"
-                        mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                        javaScriptEnabled = true
-                        domStorageEnabled = true
-                        allowContentAccess = true
-                        allowFileAccess = true
-                        loadsImagesAutomatically = true
-                        mediaPlaybackRequiresUserGesture = false
-                    }
-                },
-                chromeClient = customWebChromeClient,
-                client = CustomWebViewClient(activity, noInternetCB = {
-                    if (!isInternetAvailable(activity)) {
-                        noInternetCB()
-                    }
-                }),
-                modifier = modifier.fillMaxSize(),
-                navigator = navigator
-            )
-        }
+    Box(
+        modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState, enablePullRefresh)
+            .verticalScroll(rememberScrollState()),
+    ) {
+        WebView(
+            state = state,
+            captureBackPresses = true,
+            onCreated = {
+                it.settings.apply {
+                    cacheMode = WebSettings.LOAD_DEFAULT
+                    userAgentString =
+                        "Mozilla/5.0 (Linux; Android 9; ONEPLUS A3003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.92 Mobile Safari/537.36"
+                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    allowContentAccess = true
+                    allowFileAccess = true
+                    loadsImagesAutomatically = true
+                    mediaPlaybackRequiresUserGesture = false
+                }
+            },
+            chromeClient = customWebChromeClient,
+            client = CustomWebViewClient(activity, noInternetCB = {
+                if (!isInternetAvailable(activity)) {
+                    noInternetCB()
+                }
+            }),
+            modifier = modifier.fillMaxSize(),
+            navigator = navigator
+        )
+
+    }
 
 
     if (showExitDialog.value) {
@@ -112,8 +113,8 @@ fun MainScreen(
             onConfirm = {
                 showExitDialog.value = false
                 activity.finishAndRemoveTask()
-                        },
-            onDismiss = {showExitDialog.value = false  }
+            },
+            onDismiss = { showExitDialog.value = false }
         )
     }
 

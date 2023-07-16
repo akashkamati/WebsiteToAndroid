@@ -3,5 +3,6 @@
   "EnablePullRefresh" : false,
   "StatusBarColor" : "#D21A4F",
   "ShowSplashTime" : 5,
-  "PageLoaderType" : "NONE"
+  "PageLoaderType" : "NONE",
+  "BannerAdId" : "ca-app-pub-3940256099942544/6300978111"
 }

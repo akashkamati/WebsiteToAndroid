@@ -5,5 +5,6 @@ data class AppConstants(
     val EnablePullRefresh : Boolean,
     val StatusBarColor : String,
     val ShowSplashTime : Int,
-    val PageLoaderType : String
+    val PageLoaderType : String,
+    val BannerAdId : String
 )
