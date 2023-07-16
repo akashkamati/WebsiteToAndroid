@@ -6,6 +6,7 @@ import android.view.View
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import java.lang.Exception
 
 class AdsHandler(
     private val activity: Activity
@@ -18,10 +19,15 @@ class AdsHandler(
 
         val adRequest = AdRequest.Builder().build()
 
-        return AdView(activity).apply {
-            adUnitId = bannerAdId
-            setAdSize(AdSize.FULL_BANNER)
-            loadAd(adRequest)
+        return try {
+            AdView(activity).apply {
+                adUnitId = bannerAdId
+                setAdSize(AdSize.FULL_BANNER)
+                loadAd(adRequest)
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+            null
         }
 
     }
