@@ -12,7 +12,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
-fun ShowLottieAnimation() {
+fun ShowLottieAnimation(rawId:Int) {
 
 
     val isPlaying by remember {
@@ -24,7 +24,7 @@ fun ShowLottieAnimation() {
 
     val composition by rememberLottieComposition(
         LottieCompositionSpec
-            .RawRes(R.raw.lottie_animation)
+            .RawRes(rawId)
     )
 
 

@@ -18,7 +18,7 @@ fun ShowLoader(modifier: Modifier,loaderType:String){
         }
         "ANIMATION" -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-               ShowLottieAnimation()
+               ShowLottieAnimation(R.raw.lottie_animation)
             }
         }
         "NONE" -> {

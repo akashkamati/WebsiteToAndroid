@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.ValueCallback
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.web.WebViewState
 import com.google.accompanist.web.rememberWebViewNavigator
 import com.google.accompanist.web.rememberWebViewState
 import com.websitetoandroid.data.AppConstants
@@ -29,6 +31,7 @@ import kotlinx.coroutines.delay
 class MainActivity : ComponentActivity() {
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var state: WebViewState? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -39,27 +42,27 @@ class MainActivity : ComponentActivity() {
                     color = colorScheme.background
                 ) {
 
-                    val appConstants : MutableState<AppConstants?>  = remember{
+                    val appConstants: MutableState<AppConstants?> = remember {
                         mutableStateOf(null)
                     }
+                    val navigator = rememberWebViewNavigator()
 
-                    if (appConstants.value != null){
+                    if (appConstants.value != null) {
                         this.window.apply {
-                        if (appConstants.value!!.StatusBarColor.isNotBlank()){
-                            statusBarColor = Color.parseColor(appConstants.value!!.StatusBarColor)
+                            if (appConstants.value!!.StatusBarColor.isNotBlank()) {
+                                statusBarColor =
+                                    Color.parseColor(appConstants.value!!.StatusBarColor)
                             }
                         }
                     }
 
 
-                    LaunchedEffect(key1 = true){
-
+                    LaunchedEffect(key1 = true) {
                         val constants = DataUtil.getAppConstants(this@MainActivity)
-                        if (constants == null){
+                        if (constants == null) {
                             finishAndRemoveTask()
-                        }
-                        else {
-                            appConstants.value =  constants
+                        } else {
+                            appConstants.value = constants
                         }
                     }
 
@@ -80,29 +83,67 @@ class MainActivity : ComponentActivity() {
                         }
 
 
-                    NavHost(navController = navController, startDestination = "splash"){
+                    NavHost(navController = navController, startDestination = "splash") {
 
-                        composable("splash"){
+                        composable("splash") {
                             LaunchedEffect(key1 = true) {
-                                if (appConstants.value != null) {
+                                if (!isInternetAvailable(this@MainActivity)) {
+                                    navController.navigate("no_internet")
+                                } else if (isInternetAvailable(this@MainActivity) && appConstants.value != null) {
                                     delay((appConstants.value!!.ShowSplashTime * 1000).toLong())
                                     navController.navigate("main")
                                 }
                             }
+
+
+                            if (!isInternetAvailable(this@MainActivity)) {
+                                navController.navigate("no_internet")
+                            }
                             ShowSplashScreen()
                         }
 
-                        composable("main"){
-                            val state = rememberWebViewState(url = appConstants.value!!.EntryUrl)
-                            val navigator = rememberWebViewNavigator()
+                        composable("main") {
+                            LaunchedEffect(key1 = true) {
+                                if (!isInternetAvailable(this@MainActivity)) {
+                                    navController.navigate("no_internet")
+                                }
+                            }
+                            if (state == null) {
+                                state = rememberWebViewState(url = appConstants.value!!.EntryUrl)
+                            }
+
+
                             MainScreen(
                                 activity = this@MainActivity,
-                                state = state,
+                                state = state!!,
                                 customWebChromeClient = customWebChromeClient,
                                 navigator = navigator,
                                 modifier = Modifier.fillMaxSize(),
                                 loaderType = appConstants.value!!.PageLoaderType,
-                                enablePullRefresh = appConstants.value!!.EnablePullRefresh
+                                enablePullRefresh = appConstants.value!!.EnablePullRefresh,
+                                noInternetCB = {
+                                    if (!isInternetAvailable(this@MainActivity) && navController.currentBackStackEntry?.destination?.route != "no_internet") {
+                                        navController.navigate("no_internet").apply {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Please check your internet connection",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                }
+                            )
+                        }
+
+                        composable("no_internet") {
+                            NoInternetScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                closeApp = { finishAndRemoveTask() },
+                                onRetry = {
+                                    if (isInternetAvailable(this@MainActivity)) {
+                                        navController.popBackStack()
+                                    }
+                                }
                             )
                         }
                     }
