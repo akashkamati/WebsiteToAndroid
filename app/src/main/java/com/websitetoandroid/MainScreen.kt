@@ -3,6 +3,7 @@ package com.websitetoandroid
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.webkit.WebSettings
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +34,7 @@ fun MainScreen(
     navigator: WebViewNavigator,
     enablePullRefresh: Boolean,
     loaderType: String,
-    noInternetCB: () -> Unit
+    noInternetCB: () -> Unit,
 ) {
 
     val isLoadingForFirstTime = remember {

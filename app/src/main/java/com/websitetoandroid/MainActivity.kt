@@ -1,6 +1,5 @@
 package com.websitetoandroid
 
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -17,7 +16,6 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,18 +27,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.web.WebViewState
 import com.google.accompanist.web.rememberWebViewNavigator
 import com.google.accompanist.web.rememberWebViewState
-import com.websitetoandroid.data.AppConstants
-import com.websitetoandroid.data.DataUtil
 import com.websitetoandroid.ui.theme.WebsiteToAndroidTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
-    private var state: WebViewState? = null
     private var bannerAdView: View? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,13 +45,25 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = colorScheme.background
                 ) {
+
+                    val adView = remember{
+                        mutableStateOf(bannerAdView)
+                    }
+
+                    LaunchedEffect(key1 = true){
+                        val adsUtil = AdsUtil(this@MainActivity)
+                        if (adView.value == null && AppConstants.BannerAdId.isNotBlank()) {
+                            bannerAdView = adsUtil.getBannerId(AppConstants.BannerAdId)
+                            adView.value = bannerAdView
+                        }
+                    }
+
+
                     val navController = rememberNavController()
 
 
-                    val appConstants: MutableState<AppConstants?> = remember {
-                        mutableStateOf(null)
-                    }
                     val navigator = rememberWebViewNavigator()
+                    val state = rememberWebViewState(url = AppConstants.EntryUrl)
 
                     val isMainScreen = rememberSaveable {
                         mutableStateOf(false)
@@ -72,26 +78,6 @@ class MainActivity : ComponentActivity() {
                             else -> {
                                 isMainScreen.value = false
                             }
-                        }
-                    }
-
-
-                    if (appConstants.value != null) {
-                        this.window.apply {
-                            if (appConstants.value!!.StatusBarColor.isNotBlank()) {
-                                statusBarColor =
-                                    Color.parseColor(appConstants.value!!.StatusBarColor)
-                            }
-                        }
-                    }
-
-
-                    LaunchedEffect(key1 = true) {
-                        val constants = DataUtil.getAppConstants(this@MainActivity)
-                        if (constants == null) {
-                            finishAndRemoveTask()
-                        } else {
-                            appConstants.value = constants
                         }
                     }
 
@@ -113,11 +99,20 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         bottomBar = {
                             Column {
-                                if (isMainScreen.value && state?.isLoading != true && state?.lastLoadedUrl != null) {
-                                    if (bannerAdView != null) {
+
+                                if (isMainScreen.value && state.lastLoadedUrl != null) {
+                                    if (AppConstants.BottomAppBar.isNotEmpty()){
+                                        BottomBar(
+                                            context = this@MainActivity,
+                                            items = AppConstants.BottomAppBar,
+                                            navigator = navigator,
+                                            state = state
+                                        )
+                                    }
+                                    if (adView.value != null) {
                                         AndroidView(
                                             factory = {
-                                                bannerAdView!!
+                                                adView.value!!
                                             },
                                             modifier = Modifier.fillMaxWidth()
                                         )
@@ -135,14 +130,11 @@ class MainActivity : ComponentActivity() {
 
                             composable("splash") {
                                 LaunchedEffect(key1 = true) {
-                                    val adsUtil = AdsUtil(this@MainActivity)
 
                                     if (!isInternetAvailable(this@MainActivity)) {
                                         navController.navigate("no_internet")
-                                    } else if (isInternetAvailable(this@MainActivity) && appConstants.value != null) {
-                                        bannerAdView =
-                                            adsUtil.getBannerId(appConstants.value!!.BannerAdId)
-                                        delay((appConstants.value!!.ShowSplashTime * 1000).toLong())
+                                    } else if (isInternetAvailable(this@MainActivity)) {
+                                        delay((AppConstants.ShowSplashTime * 1000).toLong())
                                         navController.navigate("main_screen")
                                     }
                                 }
@@ -159,26 +151,17 @@ class MainActivity : ComponentActivity() {
                                     if (!isInternetAvailable(this@MainActivity)) {
                                         navController.navigate("no_internet")
                                     }
-                                    if (appConstants.value!!.BannerAdId.isNotBlank() && bannerAdView == null) {
-                                        val adsUtil = AdsUtil(this@MainActivity)
-                                        bannerAdView =
-                                            adsUtil.getBannerId(appConstants.value!!.BannerAdId)
-                                    }
-                                }
-                                if (state == null) {
-                                    state =
-                                        rememberWebViewState(url = appConstants.value!!.EntryUrl)
                                 }
 
 
                                 MainScreen(
                                     activity = this@MainActivity,
-                                    state = state!!,
+                                    state = state,
                                     customWebChromeClient = customWebChromeClient,
                                     navigator = navigator,
                                     modifier = Modifier.fillMaxSize(),
-                                    loaderType = appConstants.value!!.PageLoaderType,
-                                    enablePullRefresh = appConstants.value!!.EnablePullRefresh,
+                                    loaderType = AppConstants.PageLoaderType,
+                                    enablePullRefresh = AppConstants.EnablePullRefresh,
                                     noInternetCB = {
                                         if (!isInternetAvailable(this@MainActivity) && navController.currentBackStackEntry?.destination?.route != "no_internet") {
                                             navController.navigate("no_internet").apply {

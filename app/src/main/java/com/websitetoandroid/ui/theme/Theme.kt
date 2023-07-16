@@ -2,6 +2,7 @@ package com.websitetoandroid.ui.theme
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +15,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.websitetoandroid.AppConstants
+import java.lang.Appendable
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -58,6 +61,9 @@ fun WebsiteToAndroidTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
+            if (AppConstants.StatusBarColor.isNotBlank()){
+                window.statusBarColor =  Color.parseColor(AppConstants.StatusBarColor)
+            }
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
