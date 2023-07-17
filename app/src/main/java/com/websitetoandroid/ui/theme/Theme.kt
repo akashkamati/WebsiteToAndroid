@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.websitetoandroid.AppConstants
-import java.lang.Appendable
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

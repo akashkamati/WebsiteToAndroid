@@ -15,7 +15,7 @@ fun ShowSplashScreen() {
         contentAlignment = Alignment.Center
 
     ) {
-        ShowLottieAnimation(R.raw.lottie_animation)
+        ShowLottieAnimation(R.raw.splash_loader)
     }
 
 }
