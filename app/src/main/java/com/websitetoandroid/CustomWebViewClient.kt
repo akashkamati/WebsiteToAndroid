@@ -53,6 +53,11 @@ class CustomWebViewClient(private val activity: Activity,private val noInternetC
                     ).show()
                     false
                 }
+            } else if (shouldOpenExternally(url)){
+                Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    activity.startActivity(this)
+                }
             } else {
                 view?.loadUrl(request?.url.toString())
             }

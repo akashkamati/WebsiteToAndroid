@@ -103,7 +103,6 @@ class MainActivity : ComponentActivity() {
                                 if (isMainScreen.value && state.lastLoadedUrl != null) {
                                     if (AppConstants.BottomAppBar.isNotEmpty()){
                                         BottomBar(
-                                            context = this@MainActivity,
                                             items = AppConstants.BottomAppBar,
                                             navigator = navigator,
                                             state = state

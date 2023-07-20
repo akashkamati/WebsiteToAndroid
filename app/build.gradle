@@ -83,10 +83,6 @@ dependencies {
 //    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
 //    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.1"
 
-
-    implementation "com.mikepenz:iconics-core:5.4.0"
-    implementation 'com.mikepenz:fontawesome-typeface:5.9.0.2-kotlin@aar'
-
     implementation project(':feature-ads')
 
 
