@@ -3,7 +3,6 @@ package com.websitetoandroid
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.webkit.WebSettings
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -76,8 +75,12 @@ fun MainScreen(
     Box(
         modifier
             .fillMaxSize()
-            .pullRefresh(pullRefreshState, enablePullRefresh)
-            .verticalScroll(rememberScrollState()),
+            .then(
+                if (AppConstants.EnablePullRefresh){
+                    Modifier.pullRefresh(pullRefreshState, enablePullRefresh)
+                        .verticalScroll(rememberScrollState())
+                } else Modifier
+            )
     ) {
         WebView(
             state = state,
